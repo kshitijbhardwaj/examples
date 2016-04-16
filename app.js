@@ -3,9 +3,11 @@ $('.like').on('click', function(event){
 	event.preventDefault();
 $(this).text('Liked!');
 });
-$('.add-link').on('click'function(event){
+
+$('.add-link').on('click', function(event){
 	event.preventDefault();
-$(this).toggleClass('.add-link');
+$(this).closest('.body-top').find('.form').toggleClass('link');
+
 
 });
 

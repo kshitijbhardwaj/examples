@@ -60,17 +60,19 @@ main{
 .news-link{
 	display: block;
 	padding-bottom: 10px;
-	color: #212121;
+	color: #303F9F;
 }
 .news-like li{
 	display: inline;
 	padding-right: 2px;
 }
 form{
+	height: 0;
 	opacity: 0;
 	visibility: hidden;
-
 }
+
+
 label{
  display: block;
  font-weight: bold;
@@ -85,4 +87,8 @@ input{
 	margin-bottom: 10px;
 	box-sizing: border-box;
 }
-
+.link{
+	height: auto;
+	opacity: 1;
+	visibility: visible;
+}
