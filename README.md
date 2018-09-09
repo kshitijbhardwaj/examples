@@ -1,4 +1,4 @@
-@ViewChild(dd) private newAddressComponent: dd;
+
 
 
 <div fxFlex fxLayout="row" id="customer-profile-main-content-section" class="customer-profile-main-content-section" ma-extension-screen-id="ce::customer-profile-popup">
