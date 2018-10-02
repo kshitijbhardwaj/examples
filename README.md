@@ -1,76 +1,80 @@
-Date conversion logic
-function formatDate(date)
- {
-  date = new Date(date)
-  var dd = date.getDate(); 
-  var mm = date.getMonth()+1;
-  var yyyy = date.getFullYear(); 
-  if(dd<10){dd='0'+dd} 
-  if(mm<10){mm='0'+mm};
-  console.log(dd+' '+mm+','+yyyy)
-};
-
-
-
-<div fxFlex fxLayout="row" id="customer-profile-main-content-section" class="customer-profile-main-content-section" ma-extension-screen-id="ce::customer-profile-popup">
-    <div fxFlex="20" fxLayout="column" id="customer-profile-tab" class="customer-profile-tab">
-
-        <div fxLayout="row" fxLayoutAlign="start center" class="tab" [class.highlighted-tab]="checkIfSelected(1)">
-            <i class="material-icons">account_box</i>
-            <button id="about-tab" (click)="showTabDetails(1)">{{'About_TC' | translate:bundle }}</button>
-        </div>
-
-        <div fxLayout="row" fxLayoutAlign="start center" class="tab" [class.highlighted-tab]="checkIfSelected(2)">
-            <i class="material-icons">contact_phone</i>
-            <button id="contact-tab" (click)="showTabDetails(2)">{{'Contact_TC' | translate:bundle }}</button>
-        </div>
-
-        <div fxLayout="row" fxLayoutAlign="start center" class="tab" [class.highlighted-tab]="checkIfSelected(3)">
-            <i class="material-icons">home</i>
-            <button id="address-tab" (click)="showTabDetails(3)">{{'Address_TC' | translate:bundle }}</button>
-        </div>
-
-        <div fxLayout="row" fxLayoutAlign="start center" class="tab" [class.highlighted-tab]="checkIfSelected(4)">
-            <i class="material-icons">payment</i>
-            <button id="payment-tab" (click)="showTabDetails(4)">{{'Payment_TC' | translate:bundle }}</button>
-        </div>
-
-        <div fxLayout="row" fxLayoutAlign="start center" class="tab" [class.highlighted-tab]="checkIfSelected(5)">
-            <i class="material-icons">settings_applications</i>
-            <button id="preference-tab" (click)="showTabDetails(5)">{{'Preferences_TC' | translate:bundle }}</button>
-        </div>
-
+<div class="base-dialog">
+    <div class="dialog-header">
+        <span class="dialog-title"> {{ dialogTitle }} </span>
+        <div class="dialog-close"><i class="material-icons clear-icon" (click)="dialogRef.close(false)">clear</i></div>
+    </div> 
+    <div class="dialog-container">
+        <ng-content></ng-content>
     </div>
-    <div fxFlex="70" fxLayout="row" class="customer-profile-tab-content" id="customer-profile-tab-content">
-        <ce-progress-spinner fxFill *ngIf="isLoading" class="customer-profile-tab-content-popup"></ce-progress-spinner>
-        <div fxFill class="customer-profile-tab-content-popup" *ngIf="customerData && !isLoading" #customerProfileContent>
-
-            <div id="customerProfileAbout" class="customerProfileAbout" *ngIf="activeTab === 1">
-                <customer-profile-about-tab [customer]="customerData" (updateCustomerData)="updateCustomerData($event)"></customer-profile-about-tab>
-            </div>
-
-            <div id="customerProfileContact" *ngIf="activeTab === 2">
-                <customer-profile-contact-tab [customer]="customerData" (updateCustomerData)="updateCustomerData($event)"></customer-profile-contact-tab>
-            </div>
-
-            <div id="customerProfileAddress" *ngIf="activeTab === 3">
-                <customer-profile-address-tab [customer]="customerData" (updateCustomerData)="updateCustomerData($event)"></customer-profile-address-tab>
-            </div>
-
-            <div id="customerProfilePayment" *ngIf="activeTab === 4">
-                <customer-profile-payment-tab [customer]="customerData" (updateCustomerData)="updateCustomerData($event)"></customer-profile-payment-tab>
-            </div>
-
-            <div id="customerProfilePreference" *ngIf="activeTab === 5">
-                <customer-profile-preference-tab [customer]="customerData" [shippingMethodId]=shippingMethodId (updateCustomerData)="updateCustomerData($event)"></customer-profile-preference-tab>
-            </div>
-
-        </div>
-    </div>
-    <div fxFlex="10"></div>
 </div>
 
+import { Component, Input, OnInit } from '@angular/core'
+import { MatDialogRef } from '@angular/material'
+import { FormGroup } from '@angular/forms'
 
-checkIfSelected(tabIndex){
-        return (tabIndex === this.activeTab);
+@Component({
+    selector: 'base-dialog',
+    templateUrl: './base-dialog.component.html',
+    styleUrls: ['./base-dialog.component.css']
+})
+export class CEBaseDialogComponent implements OnInit {
+
+    @Input() dialogTitle: string;
+    dialogClass: string = 'cs-dialog';
+
+    constructor(public dialogRef: MatDialogRef<CEBaseDialogComponent>) { }
+
+    ngOnInit() {
+        /*
+            Since the material dialog uses common container div outside that is common for everybody.
+            We add the class this way to avoid global styles that will affect others
+
+            Also since multiple popups can be shown at a time, we apply the custom class only to the latest created mat-dialog-container
+            which happens to be the parent of this component.
+
+            We do not remove the class on closing the popup as the mat-dialog-container associated to the popup is removed once we close the popup.
+        */
+        let mdDialogContainerEls = this.getMaterialDialogContainerEls();
+        if (mdDialogContainerEls.length) {
+            var last = mdDialogContainerEls.length - 1;
+            var lastMdDialogEl = mdDialogContainerEls[last];
+            lastMdDialogEl && lastMdDialogEl.classList.add(this.dialogClass);
+        }
+
     }
+
+    getMaterialDialogContainerEls() {
+        return Array.prototype.slice.call(document.getElementsByTagName('mat-dialog-container'));
+    }
+}
+
+.dialog-container {
+    font-size: 1.4rem;
+    flex: 1;
+    overflow: auto;
+}
+
+.dialog-close{
+    cursor: pointer;
+}
+
+.dialog-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 1.3rem .5rem 1.3rem;
+}
+
+.dialog-title {
+    font-size: 1.2rem;
+}
+
+.base-dialog {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.clear-icon {
+    font-size: 1.3rem;
+}
